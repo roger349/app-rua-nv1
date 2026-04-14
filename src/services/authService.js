@@ -1,15 +1,22 @@
-import api from "@/lib/api"
-{/*
-export const login = (data) => api.post('/auth/login', data)
+const API = import.meta.env.VITE_API_URL;
 
-export const register = (data) => api.post('/auth/register', data)
+export const login = async (email, password) => {
+  try {
+    const res = await fetch(`${API}/api/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-export const getProfile = () => api.get('/auth/me')
-*/}
+    if (!res.ok) {
+      throw new Error("Error en login");
+    }
 
-export const login = (data) => api.post('/login', data)
-
-export const register = (data) => api.post('/register', data)
-
-// el token va en Authorization: Bearer TOKEN
-export const getProfile = (idusuario) => api.get(`/rua_usuarios/${idusuario}`)
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
