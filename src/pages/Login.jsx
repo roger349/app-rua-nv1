@@ -20,18 +20,18 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // 🔐 LOGIN
+      // LOGIN
       const res = await api.post("/api/login", { email, password });
 
-      // ⚠️ Ajustar según tu backend
+      // Ajustar según tu backend
       const token = res.data.token || res.data.accessToken;
       const user = res.data.user;
 
-      // 💾 Guardar sesión
+      // Guardar sesión
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // 📊 Registrar sesión (opcional)
+      // Registrar sesión (opcional)
       try {
         const sessionRes = await SessionsService.create({
           userId: user.id,
@@ -47,7 +47,7 @@ export default function Login() {
         console.warn("No se pudo registrar la sesión");
       }
 
-      // 🚀 Redirección
+      // Redirección
       navigate(from);
 
     } catch (error) {

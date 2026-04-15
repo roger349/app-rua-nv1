@@ -35,8 +35,7 @@ api.interceptors.response.use(
       localStorage.removeItem("token");
 
       // redirección según router
-      window.location.href = "/#/login"; // HashRouter
-      // window.location.href = "/login"; // BrowserRouter
+      window.location.href = "/login"; 
     }
 
     if (status === 500) {

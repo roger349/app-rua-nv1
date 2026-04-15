@@ -129,12 +129,12 @@ export default function ResetPassword() {
       await api.post("/api/verify-otp", { email, otp });
 
       setStep(3);
-      addLog("OTP verificado correctamente ✅");
+      addLog("OTP verificado correctamente");
     } catch {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
 
-      addLog("OTP incorrecto ❌");
+      addLog("OTP incorrecto");
 
       if (newAttempts >= MAX_ATTEMPTS) {
         const lockUntil = Date.now() + LOCK_DURATION * 1000;
@@ -167,7 +167,7 @@ export default function ResetPassword() {
         password_confirmation: password,
       });
 
-      addLog("Contraseña actualizada ✅");
+      addLog("Contraseña actualizada");
 
       // limpiar
       setPassword("");
@@ -177,7 +177,7 @@ export default function ResetPassword() {
 
       setTimeout(() => navigate("/login"), 1500);
     } catch {
-      addLog("Error al actualizar contraseña ❌");
+      addLog("Error al actualizar contraseña");
       alert("Error al cambiar contraseña");
     } finally {
       setLoading(false);
