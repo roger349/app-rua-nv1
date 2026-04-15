@@ -111,12 +111,7 @@ export default function Login() {
         {/* RECUPERAR PASSWORD */}
         <p className="text-sm text-center mt-4">
           ¿Olvidaste la contraseña?{" "}
-          <Link
-            to="/forgot-password"
-            className="text-indigo-800 font-semibold hover:underline"
-          >
-            Recuperar Contraseña
-          </Link>
+          <Link to="/forgot-password" className="text-indigo-800 font-semibold hover:underline">Recuperar Contraseña</Link>
         </p>
       </form>
     </div>

@@ -8,7 +8,7 @@ export default function ForgotPassword() {
   const handleSubmit = async () => {
     try {
       await forgotPassword(email);
-      setMsg("Revisa tu email 📩");
+      setMsg("Revisa tu email");
     } catch {
       setMsg("Error ❌");
     }
