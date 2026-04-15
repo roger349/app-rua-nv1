@@ -4,8 +4,8 @@ import Register from "@/pages/Register";
 import Dashboard from "@/pages/Dashboard";
 import Users from "@/pages/Users";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import ResetPassword from "@/pages/ResetPassword";
 import "./App.css";
+import ForgotPassword from "./pages/ForgotPassword";
 
 export default function App() {
   return (
@@ -13,7 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/dashboard/*"
           element={
