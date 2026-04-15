@@ -1,41 +1,66 @@
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import api from "@/lib/api"
-import { SessionsService } from "@/services/sessionsService"
+import { useState } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import api from "@/lib/api";
+import { SessionsService } from "@/services/sessionsService";
 
 export default function Login() {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/dashboard";
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setErrorMsg("");
+    setLoading(true);
 
     try {
+      // 🔐 LOGIN
+      const res = await api.post("/api/login", { email, password });
 
-      const res = await api.post("/login", { email, password })
-      const { accessToken, user } = res.data
+      // ⚠️ Ajustar según tu backend
+      const token = res.data.token || res.data.accessToken;
+      const user = res.data.user;
 
-      localStorage.setItem("token", accessToken)
-      localStorage.setItem("user", JSON.stringify(user))
+      // 💾 Guardar sesión
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-      const sessionRes = await SessionsService.create({
-        userId: user.id,
-        loginAt: new Date().toISOString(),
-        logoutAt: null,
-        ip: "127.0.0.1",
-        userAgent: navigator.userAgent,
-        active: true,
-      })
+      // 📊 Registrar sesión (opcional)
+      try {
+        const sessionRes = await SessionsService.create({
+          userId: user.id,
+          loginAt: new Date().toISOString(),
+          logoutAt: null,
+          ip: "127.0.0.1",
+          userAgent: navigator.userAgent,
+          active: true,
+        });
 
-      localStorage.setItem("sessionId", sessionRes.data.id)
+        localStorage.setItem("sessionId", sessionRes.data.id);
+      } catch (e) {
+        console.warn("No se pudo registrar la sesión");
+      }
 
-      navigate("/dashboard")
-    // eslint-disable-next-line no-unused-vars
+      // 🚀 Redirección
+      navigate(from);
+
     } catch (error) {
-      alert("Credenciales incorrectas")
+      const msg =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Credenciales incorrectas";
+
+      setErrorMsg(msg);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -47,21 +72,56 @@ export default function Login() {
           Ingreso
         </h1>
 
-        <input type="email" className="mb-4 w-full border rounded p-2" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+        {/* EMAIL */}
+        <input
+          type="email"
+          className="mb-4 w-full border rounded p-2"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-        <input type="password" className="mb-4 w-full border rounded p-2" placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} required />
-        
-        <button type="submit" className="w-full mt-4 border rounded p-2 hover:bg-orange-300" > Ingresar </button>
+        {/* PASSWORD */}
+        <input
+          type="password"
+          className="mb-4 w-full border rounded p-2"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-        <p className="text-sm text-center mt-4">¿Olvidaste la contraseña?{" "}
-          <Link to="/ResetPassword" className="text-indigo-800 font-semibold hover:underline" >Recuperar Contraseña</Link>
+        {/* ERROR */}
+        {errorMsg && (
+          <p className="text-red-600 text-sm mb-2 text-center">
+            {errorMsg}
+          </p>
+        )}
+
+        {/* BOTÓN */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full mt-4 border rounded p-2 hover:bg-orange-300 disabled:opacity-50"
+        >
+          {loading ? "Ingresando..." : "Ingresar"}
+        </button>
+
+        {/* RECUPERAR PASSWORD */}
+        <p className="text-sm text-center mt-4">
+          ¿Olvidaste la contraseña?{" "}
+          <Link
+            to="/forgot-password"
+            className="text-indigo-800 font-semibold hover:underline"
+          >
+            Recuperar Contraseña
+          </Link>
         </p>
-      
       </form>
     </div>
-  )
+  );
 }
-
 
 
 

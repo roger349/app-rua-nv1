@@ -1,20 +1,47 @@
 
-const pass1 = document.getElementById("pass1");
-const pass2 = document.getElementById("pass2");
-const boton = document.getElementById("Recuperar");
-const mensaje = document.getElementById("mensaje");
+import { useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { resetPassword } from "../services/authService";
 
-function verificarPasswords() {
-  if (pass1.value === pass2.value && pass1.value !== "") {
-    boton.disabled = false;
-    mensaje.textContent = "Las contraseñas coinciden ✅";
-    mensaje.style.color = "green";
-  } else {
-    boton.disabled = true;
-    mensaje.textContent = "Las contraseñas no coinciden ❌";
-    mensaje.style.color = "red";
-  }
+export default function ResetPassword() {
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+
+  const token = params.get("token");
+  const email = params.get("email");
+
+  const [pass, setPass] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [msg, setMsg] = useState("");
+
+  const handleSubmit = async () => {
+    if (pass !== confirm) {
+      setMsg("No coinciden ");
+      return;
+    }
+
+    try {
+      await resetPassword({ email, token, password: pass });
+
+      setMsg("Contraseña actualizada ");
+
+      setTimeout(() => navigate("/login"), 1500);
+
+    } catch {
+      setMsg("Error ");
+    }
+  };
+
+  return (
+    <div>
+      <h2>Nueva contraseña</h2>
+
+      <input type="password" onChange={e => setPass(e.target.value)} />
+      <input type="password" onChange={e => setConfirm(e.target.value)} />
+
+      <button onClick={handleSubmit}>Guardar</button>
+
+      <p>{msg}</p>
+    </div>
+  );
 }
-
-pass1.addEventListener("input", verificarPasswords);
-pass2.addEventListener("input", verificarPasswords);

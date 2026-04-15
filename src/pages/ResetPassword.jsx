@@ -19,11 +19,11 @@ export default function ResetPassword() {
   const MAX_ATTEMPTS = 3;
 
   const [lockTime, setLockTime] = useState(null);
-  const LOCK_DURATION = 2 * 60; // 2 minutos
+  const LOCK_DURATION = 2 * 60;
 
   const [timeLeft, setTimeLeft] = useState(0);
-
   const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // ================= TIMER BLOQUEO =================
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function ResetPassword() {
     setOtpValues(newValues);
 
     if (value && index < 5) {
-      inputsRef.current[index + 1].focus();
+      inputsRef.current[index + 1]?.focus();
     }
 
     setOtp(newValues.join(""));
@@ -75,7 +75,7 @@ export default function ResetPassword() {
 
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && !otpValues[index] && index > 0) {
-      inputsRef.current[index - 1].focus();
+      inputsRef.current[index - 1]?.focus();
     }
   };
 
@@ -90,17 +90,29 @@ export default function ResetPassword() {
 
   // ================= HANDLERS =================
 
-  const handleEmail = async (e) => {
-    e.preventDefault();
-    await api.post("/forgot-password", { email });
-    setStep(2);
-    setAttempts(0);
-    addLog("Solicitud de OTP enviada");
+  const handleEmail = async () => {
+    if (!email) {
+      alert("Ingrese un email");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await api.post("/api/forgot-password", { email });
+
+      setStep(2);
+      setAttempts(0);
+      addLog("Código enviado al email 📩");
+    } catch (e) {
+      addLog("Error al enviar código");
+      alert("Error al enviar el código");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-
+  const handleVerifyOtp = async () => {
     if (lockTime) {
       alert("Bloqueado temporalmente");
       return;
@@ -111,36 +123,65 @@ export default function ResetPassword() {
       return;
     }
 
+    setLoading(true);
+
     try {
-      await api.post("/verify-otp", { email, otp });
+      await api.post("/api/verify-otp", { email, otp });
+
       setStep(3);
-      addLog("OTP verificado correctamente");
+      addLog("OTP verificado correctamente ✅");
     } catch {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
-      addLog("OTP incorrecto");
+
+      addLog("OTP incorrecto ❌");
 
       if (newAttempts >= MAX_ATTEMPTS) {
         const lockUntil = Date.now() + LOCK_DURATION * 1000;
         setLockTime(lockUntil);
-        addLog("Usuario bloqueado temporalmente");
+        addLog("Usuario bloqueado temporalmente 🔒");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleReset = async (e) => {
-    e.preventDefault();
+  const handleReset = async () => {
+    if (!coinciden) {
+      alert("Las contraseñas no coinciden");
+      return;
+    }
 
-    if (!coinciden || !isStrong) return;
+    if (!isStrong) {
+      alert("Contraseña débil");
+      return;
+    }
 
-    await api.post("/reset-password", {
-      email,
-      otp,
-      password,
-    });
+    setLoading(true);
 
-    addLog("Contraseña actualizada");
-    navigate("/login");
+    try {
+      await api.post("/api/reset-password", {
+        email,
+        token: otp, // usar "otp" como token
+        password,
+        password_confirmation: password,
+      });
+
+      addLog("Contraseña actualizada ✅");
+
+      // limpiar
+      setPassword("");
+      setConfirm("");
+      setOtp("");
+      setOtpValues(["", "", "", "", "", ""]);
+
+      setTimeout(() => navigate("/login"), 1500);
+    } catch {
+      addLog("Error al actualizar contraseña ❌");
+      alert("Error al cambiar contraseña");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ================= UI =================
@@ -158,14 +199,17 @@ export default function ResetPassword() {
             <input
               type="email"
               placeholder="Email"
-              className="w-full mb-4 border border-fuchsia-700 p-2"
+              className="w-full mb-4 border p-2"
               onChange={(e) => setEmail(e.target.value)}
             />
+
             <button
+              type="button"
               onClick={handleEmail}
-              className="w-full bg-white  hover:bg-blue-400 text-black border border-fuchsia-700 p-2"
+              disabled={loading}
+              className="w-full bg-white hover:bg-blue-400 border p-2"
             >
-              Enviar código
+              {loading ? "Enviando..." : "Enviar código"}
             </button>
           </>
         )}
@@ -179,7 +223,7 @@ export default function ResetPassword() {
               </p>
             )}
 
-            <div className="flex gap-2 mb-4">
+            <div className="flex gap-2 mb-4 justify-center">
               {otpValues.map((v, i) => (
                 <input
                   key={i}
@@ -194,11 +238,12 @@ export default function ResetPassword() {
             </div>
 
             <button
+              type="button"
               onClick={handleVerifyOtp}
-              disabled={!!lockTime}
+              disabled={loading || !!lockTime}
               className="w-full bg-blue-500 text-white p-2"
             >
-              Verificar
+              {loading ? "Verificando..." : "Verificar"}
             </button>
           </>
         )}
@@ -213,10 +258,7 @@ export default function ResetPassword() {
               className="w-full mb-2 border p-2"
             />
 
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-            >
+            <button type="button" onClick={() => setShowPassword(!showPassword)}>
               👁️
             </button>
 
@@ -228,10 +270,12 @@ export default function ResetPassword() {
             />
 
             <button
+              type="button"
               onClick={handleReset}
+              disabled={loading}
               className="w-full bg-green-500 text-white p-2"
             >
-              Cambiar contraseña
+              {loading ? "Guardando..." : "Cambiar contraseña"}
             </button>
           </>
         )}
@@ -245,15 +289,15 @@ export default function ResetPassword() {
             </p>
           ))}
         </div>
+
         <button
-        type="button"
-        onClick={() => navigate("/login")}
-        className="mt-4 w-full border border-fuchsia-700 hover:bg-blue-300 rounded p-2"
-      >
-        Volver
-      </button>
+          type="button"
+          onClick={() => navigate("/login")}
+          className="mt-4 w-full border hover:bg-blue-300 rounded p-2"
+        >
+          Volver
+        </button>
       </form>
-      
     </div>
   );
 }
