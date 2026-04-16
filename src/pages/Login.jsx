@@ -65,8 +65,8 @@ export default function Login() {
   };
 
   return (
-    <div className="flex h-screen gap-x-6 p-14 m-0">
-      <Card className="w-1/2 flex items-center justify-center bg-orange-100 p-14">
+    <div className="flex h-screen justify-center gap-x-20 p-14 m-0">
+      <Card className="w-full max-w-sm md:max-w-md flex items-center justify-center bg-orange-100 p-14">
         <form className="bg-gradient-to-r from-slate-300 to-slate-400 ml-2 p-8 w-full shadow"
           onSubmit={handleSubmit}>
           <h1 className="text-2xl font-bold mb-4 text-center">
@@ -116,7 +116,7 @@ export default function Login() {
           </p>
         </form>
       </Card>
-      <Card className="w-1/2 flex m-0">
+      <Card className="w-full max-w-sm md:max-w-md flex">
         <img className="w-full h-full object-cover" src={family}/>
       </Card>
     </div>
