@@ -67,7 +67,7 @@ export default function Login() {
   return (
     <div className="flex h-screen justify-center gap-x-20 p-14 m-0">
       <Card className="w-full max-w-sm md:max-w-md flex items-center justify-center bg-orange-100 p-10 border-1">
-        <form className="bg-gradient-to-r from-slate-300 to-slate-400 ml-2 p-8 w-full shadow border-1" onSubmit={handleSubmit}>
+        <form className="w-full h-full bg-gradient-to-r from-slate-300 to-slate-400 p-8 shadow border-1 m-0" onSubmit={handleSubmit}>
           <h1 className="text-2xl font-bold mb-4 text-center">Ingreso</h1>
           {/* EMAIL */}
           <input type="email" className="mb-4 w-full border rounded p-2" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}required/>
