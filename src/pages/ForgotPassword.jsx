@@ -19,7 +19,7 @@ export default function ForgotPassword() {
      <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <form className="bg-gradient-to-r from-slate-300 to-slate-400 p-8 rounded-xl w-96 shadow">
         <h1 className="text-xl font-bold mb-6 text-center">Recuperar contraseña </h1>
-        <input className="mt-4 w-full border border-fuchsia-700 hover:bg-blue-300 rounded p-2" onChange={e => setEmail(e.target.value)} placeholder="Email" />
+        <input className="mt-4 w-full border border-fuchsia-700 hover:bg-blue-300 rounded p-2" onChange={e => setEmail(e.target.value)} placeholder="Email" required/>
         <button className="mt-4 w-full border border-fuchsia-700 hover:bg-blue-300 rounded p-2" onClick={handleSubmit}>Enviar</button>
         <p>{msg}</p>   
         <button type="button" onClick={() => navigate("/login")} 
