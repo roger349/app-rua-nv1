@@ -34,7 +34,7 @@ export default function ResetPassword() {
 
   return (
     <div>
-      <h2>Nueva contraseña</h2>
+      <h1>Nueva contraseña</h1>
 
       <input type="password" onChange={e => setPass(e.target.value)} />
       <input type="password" onChange={e => setConfirm(e.target.value)} />

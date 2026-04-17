@@ -66,57 +66,26 @@ export default function Login() {
 
   return (
     <div className="flex h-screen justify-center gap-x-20 p-14 m-0">
-      <Card className="w-full max-w-sm md:max-w-md flex items-center justify-center bg-orange-100 p-14">
-        <form className="bg-gradient-to-r from-slate-300 to-slate-400 ml-2 p-8 w-full shadow"
-          onSubmit={handleSubmit}>
-          <h1 className="text-2xl font-bold mb-4 text-center">
-            Ingreso
-          </h1>
-
+      <Card className="w-full max-w-sm md:max-w-md flex items-center justify-center bg-orange-100 p-10 border-1">
+        <form className="bg-gradient-to-r from-slate-300 to-slate-400 ml-2 p-8 w-full shadow border-1" onSubmit={handleSubmit}>
+          <h1 className="text-2xl font-bold mb-4 text-center">Ingreso</h1>
           {/* EMAIL */}
-          <input
-            type="email"
-            className="mb-4 w-full border rounded p-2"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-
+          <input type="email" className="mb-4 w-full border rounded p-2" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}required/>
           {/* PASSWORD */}
-          <input
-            type="password"
-            className="mb-4 w-full border rounded p-2"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
+          <input type="password" className="mb-4 w-full border rounded p-2" placeholder="Contraseña" value={password}onChange={(e) => setPassword(e.target.value)}required/>
           {/* ERROR */}
-          {errorMsg && (
-            <p className="text-red-600 text-sm mb-2 text-center">
-              {errorMsg}
-            </p>
-          )}
-
+          {errorMsg && (<p className="text-red-600 text-sm mb-2 text-center">{errorMsg}</p>)}
           {/* BOTÓN */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full mt-4 border rounded p-2 hover:bg-orange-300 disabled:opacity-50"
-          >
+          <button className="w-full mt-4 border rounded p-2 hover:bg-orange-300 disabled:opacity-50" type="submit" disabled={loading}>
             {loading ? "Ingresando..." : "Ingresar"}
           </button>
-
           {/* RECUPERAR PASSWORD */}
-          <p className="text-sm text-center mt-4">
-            ¿Olvidaste la contraseña?{" "}
+          <p className="text-sm text-center mt-4">¿Olvidaste la contraseña?{" "}
             <Link to="/forgot-password" className="text-indigo-800 font-semibold hover:underline">Recuperar Contraseña</Link>
           </p>
         </form>
       </Card>
-      <Card className="w-full max-w-sm md:max-w-md flex">
+      <Card className="w-full max-w-sm md:max-w-md flex border-1">
         <img className="w-full h-full object-cover" src={family}/>
       </Card>
     </div>
