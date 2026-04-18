@@ -6,10 +6,13 @@ const api = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
+    "Accept": "application/json", // 👈 IMPORTANTE para Laravel
   },
 });
 
-// INTERCEPTOR REQUEST → agrega token automáticamente
+// ============================
+// REQUEST INTERCEPTOR
+// ============================
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -23,19 +26,26 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// INTERCEPTOR RESPONSE → manejo global de errores
+// ============================
+// RESPONSE INTERCEPTOR
+// ============================
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
 
     if (status === 401) {
-      console.warn("Sesión expirada");
+      console.warn("No autenticado / sesión expirada");
 
       localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
 
-      // redirección según router
-      window.location.href = "/login"; 
+    if (status === 403) {
+      console.warn("No autorizado (rol)");
+
+      // Podés redirigir a home o página 403
+      window.location.href = "/";
     }
 
     if (status === 500) {
@@ -46,4 +56,46 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+// ============================
+// AUTH
+// ============================
+export const login = async (data) => {
+  const res = await api.post("/login", data);
+
+  // Guardar token automáticamente
+  localStorage.setItem("token", res.data.token);
+
+  return res.data;
+};
+
+export const logout = () => {
+  localStorage.removeItem("token");
+};
+
+// ============================
+// USER AUTH
+// ============================
+export const getMe = () => api.get("/user");
+
+// ============================
+// USERS (ADMIN)
+// ============================
+export const getUsers = () => api.get("/users");
+
+export const createUser = (data) => api.post("/users", data);
+
+export const updateUser = (id, data) => api.put(`/users/${id}`, data);
+
+export const deleteUser = (id) => api.delete(`/users/${id}`);
+
+export default api; 
+
+//=================================
+// Sessions
+//=================================
+export const getUserSessionsPDF = async (userId) => {
+  const response = await api.get(`/users/${userId}/sessions/pdf`, {
+    responseType: 'blob', // 👈 Crucial para archivos binarios
+  });
+  return response.data;
+};

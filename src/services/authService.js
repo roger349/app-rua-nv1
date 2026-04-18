@@ -1,28 +1,36 @@
 import api from "@/lib/api";
 
-// LOGIN   https://abc123.ngrok-free.app/login
+// ============================
+// LOGIN
+// ============================
 export const login = async (email, password) => {
-  const res = await api.post("/api/login", { email, password });
+  const res = await api.post("http://127.0.0.1:8000/api/login", { email, password }); // 👈 sin /api
 
   localStorage.setItem("token", res.data.token);
 
   return res.data;
 };
 
+// ============================
 // LOGOUT
+// ============================
 export const logout = () => {
   localStorage.removeItem("token");
 };
 
+// ============================
 // FORGOT PASSWORD
+// ============================
 export const forgotPassword = async (email) => {
-  const res = await api.post("/api/forgot-password", { email });
+  const res = await api.post("/forgot-password", { email });
   return res.data;
 };
 
+// ============================
 // RESET PASSWORD
+// ============================
 export const resetPassword = async ({ email, token, password }) => {
-  const res = await api.post("/api/reset-password", {
+  const res = await api.post("/reset-password", {
     email,
     token,
     password,
@@ -30,4 +38,4 @@ export const resetPassword = async ({ email, token, password }) => {
   });
 
   return res.data;
-};
+}; 
