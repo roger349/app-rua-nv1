@@ -11,6 +11,8 @@ import {
   ArrowLeft,
   Search,
   Filter,
+  Trash2,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,6 +74,24 @@ export default function Users() {
     }
   };
 
+  // --- NUEVA FUNCIÓN DE ELIMINACIÓN ---
+  const handleDeleteSelected = async () => {
+    const count = selectedIds.length;
+    if (!window.confirm(`¿Estás seguro de que deseas eliminar ${count} usuario(s)?`)) return;
+
+    try {
+      // Borrado masivo (simulado o real según tu API)
+      await Promise.all(selectedIds.map(id => UsersService.deleteUser(id)));
+      
+      setUsers(prev => prev.filter(u => !selectedIds.includes(u.id)));
+      setSelectedIds([]);
+      alert("Usuarios eliminados con éxito.");
+    } catch (error) {
+      console.error("Error al eliminar usuarios", error);
+      alert("Error al intentar eliminar los usuarios seleccionados.");
+    }
+  };
+
   const handleExportPDF = async (user) => {
     setIsExporting(user.id);
     try {
@@ -130,7 +150,7 @@ export default function Users() {
   if (loading) return <p className="p-6">Cargando usuarios...</p>;
 
   return (
-    <div className="w-full h-full bg-gradient-to-r from-slate-350 to-slate-400 space-y-6 p-6">
+    <div className="relative w-full h-full bg-gradient-to-r from-slate-350 to-slate-400 space-y-6 p-6 pb-24">
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -151,14 +171,14 @@ export default function Users() {
         </div>
 
         <Button
-          className="bg-gradient-to-r from-red-400 to-amber-500"
+          className="bg-gradient-to-r from-red-400 to-amber-500 hover:opacity-90 transition-opacity"
           onClick={() => setAddOpen(true)}
         >
           <UserPlus className="mr-2 h-4 w-4" /> Agregar Usuario
         </Button>
       </div>
 
-      {/* BARRA DE FILTROS REINTEGRADA */}
+      {/* BARRA DE FILTROS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white/40 p-4 rounded-xl backdrop-blur-md border border-white/20 shadow-sm">
         <div className="md:col-span-2 space-y-1">
           <Label className="text-[10px] font-bold uppercase text-slate-600 flex items-center gap-1">
@@ -207,12 +227,13 @@ export default function Users() {
       {/* TABLA */}
       <div className="rounded-xl border border-white/20 bg-white/50 backdrop-blur-sm overflow-hidden shadow-lg">
         <Table>
-          <TableHeader className="bg-slate-200/50">
+          <TableHeader className="bg-slate-400">
             <TableRow>
               <TableHead className="text-center w-[40px]">
-                <Checkbox
+                <Checkbox 
+                  className="bg-slate-400"
                   checked={
-                    selectedIds.length > 0 &&
+                    filteredUsers.length > 0 &&
                     selectedIds.length === filteredUsers.length
                   }
                   onCheckedChange={(checked) =>
@@ -231,12 +252,12 @@ export default function Users() {
             </TableRow>
           </TableHeader>
 
-          <TableBody>
+          <TableBody className="bg-slate-400">
             {filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
                 <TableRow
                   key={user.id}
-                  className="hover:bg-white/40 transition-colors border-white/10"
+                  className={`transition-colors border-white/10 ${selectedIds.includes(user.id) ? 'bg-white/60' : 'hover:bg-white/40'}`}
                 >
                   <TableCell className="text-center">
                     <Checkbox
@@ -269,7 +290,6 @@ export default function Users() {
                       variant="secondary"
                       disabled={isExporting === user.id}
                       onClick={() => handleExportPDF(user)}
-                      // Agregamos mx-auto para centrar el bloque y justify-center para el contenido
                       className="flex items-center justify-center gap-2 h-8 w-20 mx-auto bg-white/50 hover:bg-white border border-slate-200"
                     >
                       {isExporting === user.id ? (
@@ -335,6 +355,38 @@ export default function Users() {
           </TableBody>
         </Table>
       </div>
+
+      {/* --- BARRA FLOTANTE DE ACCIONES --- */}
+      {selectedIds.length > 0 && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-6 duration-300">
+          <div className="bg-slate-900/90 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-6 border border-slate-700 backdrop-blur-xl">
+            <div className="flex flex-col border-r border-slate-700 pr-6">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Seleccionados</span>
+              <span className="text-lg font-black text-amber-400 leading-none">{selectedIds.length}</span>
+            </div>
+
+            <div className="flex gap-3">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-slate-300 hover:bg-white/10 hover:text-white"
+                onClick={() => setSelectedIds([])}
+              >
+                <X className="mr-2 h-4 w-4" /> Cancelar
+              </Button>
+              
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                className="bg-red-500 hover:bg-red-600 px-6 font-bold shadow-lg shadow-red-900/20"
+                onClick={handleDeleteSelected}
+              >
+                <Trash2 className="mr-2 h-4 w-4" /> Eliminar Permanente
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <EditUser
         open={editOpen}

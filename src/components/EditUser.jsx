@@ -133,13 +133,14 @@ export default function EditUser({
             variant="ghost"
             onClick={() => onOpenChange(false)}
             disabled={loading}
+            className="bg-slate-300 hover:bg-red-400 text-black min-w-[140px] shadow-lg shadow-slate-200"
           >
             Cancelar
           </Button>
           <Button 
             onClick={handleSave} 
             disabled={loading}
-            className="bg-slate-800 hover:bg-slate-900 text-white min-w-[140px]"
+            className="bg-slate-300 hover:bg-red-400 text-black min-w-[140px] shadow-lg shadow-slate-200"
           >
             {loading ? (
               <>

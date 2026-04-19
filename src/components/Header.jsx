@@ -12,7 +12,7 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-gradient-to-r from-orange-300 to-red-400 shadow flex justify-between items-center px-6 py-4">
+    <header className="bg-gradient-to-r from-slate-400 to-blue-300 shadow flex justify-between items-center px-6 py-4">
       <h1 className="text-xl font-bold text-white">
         Registro Único de Adoptantes
       </h1>

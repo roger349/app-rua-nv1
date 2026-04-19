@@ -127,9 +127,9 @@ export default function Login() {
       </Card>
 
       {/* SECCIÓN IMAGEN (Oculta en móviles pequeños) */}
-      <Card className="hidden lg:flex w-full max-w-md overflow-hidden border-none shadow-2xl rounded-2xl">
+      <Card className="hidden lg:flex w-full max-w-md overflow-hidden border-none shadow-2xl rounded-2">
         <img
-          className="w-full h-[500px] object-cover hover:scale-105 transition-transform duration-700"
+          className="w-full h-[380px] object-cover hover:scale-105 transition-transform duration-700"
           src={family}
           alt="family"
         />
