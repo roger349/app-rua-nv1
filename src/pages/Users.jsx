@@ -143,7 +143,7 @@ export default function Users() {
 
   const statusColor = {
     Activo: "bg-green-500",
-    Inactivo: "bg-gray-400",
+    Inactivo: "bg-red-400",
     Suspendido: "bg-yellow-500",
   };
 
