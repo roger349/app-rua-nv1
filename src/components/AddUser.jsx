@@ -119,7 +119,7 @@ export default function AddUser({
             <Input
               id="password"
               type="password"
-              placeholder="Mínimo 8 caracteres"
+              placeholder="Mínimo 6 caracteres"
               value={form.password}
               onChange={(e) => handleChange("password", e.target.value)}
               className="bg-white/50"
