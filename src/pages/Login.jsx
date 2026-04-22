@@ -9,7 +9,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Si venía de una ruta protegida, lo devolvemos allí, sino al dashboard
+  // va para dashboard
   const from = location.state?.from?.pathname || "/dashboard";
 
   const [email, setEmail] = useState("");
@@ -35,12 +35,12 @@ export default function Login() {
         return;
       }
 
-      // 3. Guardar credenciales en el navegador inmediatamente
+      // 3. Guardar credenciales en el navegador
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // 4. Registro de Sesión (Tracking en DB)
-      // Lo envolvemos en un try/catch interno para que, si falla el tracking,
+      // 4. Registro de Sesión
+      // Lo envolvemos en un try/catch interno para que, si falla
       // el usuario igual pueda entrar al sistema.
       try {
         await SessionsService.create({
