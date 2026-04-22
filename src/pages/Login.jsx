@@ -143,7 +143,6 @@ export default function Login() {
 
             <input
               type="password"
-              autoComplete="new-password"
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
